@@ -13,6 +13,7 @@ spring:
   application:
     name: demo
   jpa:
+    database: h2
     open-in-view: false
     show-sql: false
     database-platform: org.hibernate.dialect.H2Dialect
