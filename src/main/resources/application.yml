@@ -19,6 +19,8 @@ spring:
       add-mappings: false
   sleuth:
     trace-id128: true
+  liquibase:
+    enabled: false
     
 
 springdoc:
