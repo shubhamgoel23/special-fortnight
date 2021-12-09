@@ -1,8 +1,8 @@
-package com.demo.micro;
+package com.demo.micro.book;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MicroRepository extends JpaRepository<Micro, Integer> {
+public interface BookRepository extends JpaRepository<Book, Integer> {
 }
