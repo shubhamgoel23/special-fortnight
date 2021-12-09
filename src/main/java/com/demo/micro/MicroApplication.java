@@ -19,5 +19,4 @@ public class MicroApplication {
 		// Setting Spring Boot SetTimeZone
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	}
-
 }

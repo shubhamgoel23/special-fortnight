@@ -3,6 +3,8 @@ logging:
     root: info
     web: info
     sql: info
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS,UTC
 spring:
 #  profiles:
 #    active: ${PROFILE:local}
@@ -26,6 +28,8 @@ spring:
   h2:
     console:
       enabled: true
+      settings:
+        web-allow-others: true
   datasource:
     url: jdbc:h2:mem:mydb
     username: sa
@@ -73,7 +77,6 @@ server:
 info:
   message: hello
   
-javers:
   
   
   
