@@ -12,6 +12,8 @@ spring:
     name: demo
   jpa:
     open-in-view: false
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
   mvc:
     throw-exception-if-no-handler-found: true
   web:
@@ -21,8 +23,15 @@ spring:
     trace-id128: true
   liquibase:
     enabled: false
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:mydb
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
     
-
 springdoc:
   show-actuator: true
   api-docs:
@@ -63,4 +72,8 @@ server:
 
 info:
   message: hello
+  
+javers:
+  
+  
   
