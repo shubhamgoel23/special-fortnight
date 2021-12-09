@@ -44,7 +44,7 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
-    try-it-out-enabled: true
+    try-it-out-enabled: false
 
 management:
   endpoint:
