@@ -17,10 +17,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
@@ -34,6 +36,22 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+//
+//	@ExceptionHandler(AccessDeniedException.class)
+//	public ResponseEntity<Object> handleAccessDeniedException(Exception ex, WebRequest request) {
+//		HttpHeaders headers = new HttpHeaders();
+//		HttpStatus status = HttpStatus.BAD_REQUEST;
+//		return handleExceptionInternal(ex, null, headers, status, request);
+//	}
+
+	@ExceptionHandler(CustomException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+//	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	protected ResponseEntity<Object> handleTenantBadRequestException(Exception ex, WebRequest request) {
+		HttpHeaders headers = new HttpHeaders();
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		return handleExceptionInternal(ex, null, headers, status, request);
+	}
 
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers,

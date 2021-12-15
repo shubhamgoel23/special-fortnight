@@ -6,7 +6,6 @@ import static com.demo.micro.util.HelperClass.requestMethod;
 import static com.demo.micro.util.HelperClass.requestUrl;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 
@@ -28,13 +27,13 @@ public class Response<T> {
 	protected long timeStamp = currentTimeMillis.get();
 
 	@Builder.Default
-	protected Optional<String> traceId = currentTraceId.get();
+	protected String traceId = currentTraceId.get().orElse(null);
 
 	@Builder.Default
-	protected Optional<String> method = requestMethod.get();
+	protected String method = requestMethod.get().orElse(null);
 
 	@Builder.Default
-	protected Optional<String> path = requestUrl.get();
+	protected String path = requestUrl.get().orElse(null);
 
 	protected HttpStatus status;
 
