@@ -1,6 +1,8 @@
 package com.demo.micro.exception;
 
 import static com.demo.micro.util.HelperClass.collectionAsStream;
+import static com.demo.micro.util.HelperClass.requestMethod;
+import static com.demo.micro.util.HelperClass.requestUrl;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,12 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
@@ -35,29 +35,22 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
-public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
-//
-//	@ExceptionHandler(AccessDeniedException.class)
-//	public ResponseEntity<Object> handleAccessDeniedException(Exception ex, WebRequest request) {
-//		HttpHeaders headers = new HttpHeaders();
-//		HttpStatus status = HttpStatus.BAD_REQUEST;
-//		return handleExceptionInternal(ex, null, headers, status, request);
-//	}
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(CustomException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler({ BusinessException.class })
 //	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	protected ResponseEntity<Object> handleTenantBadRequestException(Exception ex, WebRequest request) {
+	protected ResponseEntity<Object> handleBusinessException(final BusinessException ex, WebRequest request) {
 		HttpHeaders headers = new HttpHeaders();
-		HttpStatus status = HttpStatus.BAD_REQUEST;
-		return handleExceptionInternal(ex, null, headers, status, request);
+		Object body = Response.<Object>builder().status(ex.getHttpStatus()).statusCode(ex.getHttpStatus().value())
+				.reason(ex.getCode()).developerMessage(ex.getLocalizedMessage()).build();
+		return handleExceptionInternal(ex, body, headers, ex.getHttpStatus(), request);
 	}
 
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers,
 			HttpStatus status, WebRequest request) {
-
-		log.error(ex.getLocalizedMessage(), ex);
+		log.error("Request {} {} failed with exception reason: {}", requestMethod.get().orElse("null"),
+				requestUrl.get().orElse("null"), ex.getMessage(), ex);
 		if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
 			request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, RequestAttributes.SCOPE_REQUEST);
 		}
@@ -155,4 +148,5 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	public List<ValidationError> addValidationErrors(Set<ConstraintViolation<?>> constraintViolations) {
 		return collectionAsStream(constraintViolations).map(this::addValidationError).collect(Collectors.toList());
 	}
+
 }

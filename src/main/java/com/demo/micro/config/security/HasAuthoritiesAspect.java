@@ -21,16 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HasAuthoritiesAspect {
 
-	@Before("within(@org.springframework.web.bind.annotation.RestController *) && @annotation(permission)")
-	public void hasPermission(final JoinPoint joinPoint, final HasPermission permission) {
+	@Before("within(@org.springframework.web.bind.annotation.RestController *) && @annotation(value)")
+	public void hasPermission(final JoinPoint joinPoint, final HasPermission value) {
 
-		validate(Stream.of(permission.permission()).map(Permission::getPermission));
+		validate(Stream.of(value.value()).map(Permission::getPermission));
 	}
 
-	@Before("within(@org.springframework.web.bind.annotation.RestController *) &&  @annotation(role)")
-	public void hasRole(final JoinPoint joinPoint, final HasRole role) {
+	@Before("within(@org.springframework.web.bind.annotation.RestController *) &&  @annotation(value)")
+	public void hasRole(final JoinPoint joinPoint, final HasRole value) {
 
-		validate(Stream.of(role.role()).map(Role::getRole));
+		validate(Stream.of(value.value()).map(Role::getRole));
 	}
 
 	private void validate(Stream<String> authorities) {

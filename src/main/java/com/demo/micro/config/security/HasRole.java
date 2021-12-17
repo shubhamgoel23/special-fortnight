@@ -15,5 +15,5 @@ import org.springframework.core.annotation.Order;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public @interface HasRole {
 
-	Role[] role();
+	Role[] value() default {};
 }

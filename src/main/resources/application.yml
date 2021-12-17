@@ -6,6 +6,13 @@ logging:
   pattern:
     dateformat: yyyy-MM-dd HH:mm:ss.SSS,UTC
 spring:
+  jackson:
+    default-property-inclusion: non-null
+    serialization:
+      indent-output: true
+    deserialization:
+      fail-on-unknown-properties: false
+      
 #  profiles:
 #    active: ${PROFILE:local}
   autoconfigure:

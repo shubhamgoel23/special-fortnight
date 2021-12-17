@@ -63,6 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final Pattern authorizationPattern = Pattern.compile("^Bearer (?<token>[a-zA-Z0-9-._~+/]+=*)$",
 			Pattern.CASE_INSENSITIVE);
+	
+	private final ObjectMapper objectMapper;
 
 	private String bearerTokenHeaderName = HttpHeaders.AUTHORIZATION;
 
@@ -205,8 +207,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.build();
 			// @formatter:on
 
-			final ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(response.getOutputStream(), body);
+			objectMapper.writeValue(response.getOutputStream(), body);
 
 		};
 	}
@@ -226,8 +227,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.developerMessage(root.getMessage())
 					.build();
 			// @formatter:on
-			final ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(response.getOutputStream(), body);
+			objectMapper.writeValue(response.getOutputStream(), body);
 
 		};
 	}
