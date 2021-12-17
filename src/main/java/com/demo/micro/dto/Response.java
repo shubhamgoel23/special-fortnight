@@ -1,4 +1,4 @@
-package com.demo.micro.config;
+package com.demo.micro.dto;
 
 import static com.demo.micro.util.HelperClass.currentTimeMillis;
 import static com.demo.micro.util.HelperClass.currentTraceId;

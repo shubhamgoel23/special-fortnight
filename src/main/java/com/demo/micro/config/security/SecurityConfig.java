@@ -45,7 +45,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.util.StringUtils;
 
-import com.demo.micro.config.Response;
+import com.demo.micro.dto.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;

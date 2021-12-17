@@ -1,4 +1,4 @@
-package com.demo.micro.exception;
+package com.demo.micro.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

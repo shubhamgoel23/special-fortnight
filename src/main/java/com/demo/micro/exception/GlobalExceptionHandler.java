@@ -29,7 +29,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.util.WebUtils;
 
-import com.demo.micro.config.Response;
+import com.demo.micro.dto.Response;
+import com.demo.micro.dto.ValidationError;
 
 import lombok.extern.slf4j.Slf4j;
 
