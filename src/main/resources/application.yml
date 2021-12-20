@@ -5,7 +5,10 @@ logging:
     sql: info
   pattern:
     dateformat: yyyy-MM-dd HH:mm:ss.SSS,UTC
+
 spring:
+  main:
+    banner-mode: off
   jackson:
     default-property-inclusion: non-null
     serialization:

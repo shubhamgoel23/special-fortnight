@@ -1,5 +1,10 @@
 package com.demo.micro.book;
 
-public record BookDto(String firstName) {
+import lombok.Data;
+
+@Data
+public class BookDto {
+
+	private String firstName;
 
 }
