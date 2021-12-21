@@ -173,7 +173,11 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<image>
+						<builder>paketobuildpacks/builder:tiny</builder>
 						<name>docker.io/shubhamgoel23/${project.artifactId}:${version.number}</name>
+						<env>
+							<BP_BINARY_COMPRESSION_METHOD>upx</BP_BINARY_COMPRESSION_METHOD>
+						</env>
 					</image>
 					<excludes>
 						<exclude>
