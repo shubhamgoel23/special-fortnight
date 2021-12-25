@@ -1,16 +1,8 @@
 package com.demo.micro.book;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import lombok.*;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.persistence.*;
 
 @Data
 @Builder
@@ -19,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Book {
 
-	@Id
-	@SequenceGenerator(name = "micro_id_sequence", sequenceName = "micro_id_sequence")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "micro_id_sequence")
-	private Integer id;
-	private String firstName;
+    @Id
+    @SequenceGenerator(name = "micro_id_sequence", sequenceName = "micro_id_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "micro_id_sequence")
+    private Integer id;
+    private String firstName;
 }

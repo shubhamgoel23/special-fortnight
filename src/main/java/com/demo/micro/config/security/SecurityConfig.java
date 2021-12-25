@@ -1,16 +1,13 @@
 package com.demo.micro.config.security;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.demo.micro.util.ResponseBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,15 +42,15 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.util.StringUtils;
 
-import com.demo.micro.dto.Response;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -66,169 +63,153 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private final ObjectMapper objectMapper;
 
-	private String bearerTokenHeaderName = HttpHeaders.AUTHORIZATION;
+    private String bearerTokenHeaderName = HttpHeaders.AUTHORIZATION;
 
-	@Override
-	protected void configure(HttpSecurity security) throws Exception {
-		// @formatter:off
-		security
-		.csrf().disable()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		.and()
-		.authorizeRequests((authorizeRequests) -> authorizeRequests
-				.antMatchers("/api/**").fullyAuthenticated()
-				.anyRequest().permitAll())
-		.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
-						.accessDeniedHandler(accessDeniedHandler())
-						.authenticationEntryPoint(authenticationEntryPoint())
-						.authenticationManagerResolver(resolve())
-						.bearerTokenResolver(getTokenResolver()));
-		// @formatter:on
+    @Override
+    protected void configure(HttpSecurity security) throws Exception {
+        // @formatter:off
+        security
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests(authorizeRequests -> authorizeRequests
+                        .antMatchers("/api/**").fullyAuthenticated()
+                        .anyRequest().permitAll())
+                .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
+                        .accessDeniedHandler(accessDeniedHandler())
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                        .authenticationManagerResolver(resolve())
+                        .bearerTokenResolver(getTokenResolver()));
+        // @formatter:on
 
-	}
+    }
 
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/public/**");
-	}
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/public/**");
+    }
 
-	@Bean
-	AuthenticationManagerResolver<HttpServletRequest> resolve() {
-		return request -> {
-//			if (request.getPathInfo().startsWith("/employee")) {
-//				return jwt();
-//			}
-			return jwtAuthenticationManager();
-		};
-	}
+    @Bean
+    AuthenticationManagerResolver<HttpServletRequest> resolve() {
+        return request ->
+			/*if (request.getPathInfo().startsWith("/employee")) {
+				return jwt();
+			}*/
+             jwtAuthenticationManager();
 
-	AuthenticationManager jwtAuthenticationManager() {
-//			jwtDecoder = NimbusJwtDecoder
-//					.withSecretKey(Keys.hmacShaKeyFor(
-//							"secursecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuree".getBytes()))
-//					.build();
-		JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(customJwtDecoder());
-		authenticationProvider.setJwtAuthenticationConverter(customTokenConverter());
-		return authenticationProvider::authenticate;
-	}
+    }
 
-	private Converter<Jwt, AbstractAuthenticationToken> customTokenConverter() {
-		return jwt -> {
-			OAuth2AccessToken token = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, jwt.getTokenValue(),
-					jwt.getIssuedAt(), jwt.getExpiresAt());
-			Set<GrantedAuthority> simpleGrantedAuthority = fetchAuthorities(jwt);
-			Map<String, Object> attributes = jwt.getClaims();
-			OAuth2AuthenticatedPrincipal principal = new DefaultOAuth2AuthenticatedPrincipal(attributes,
-					simpleGrantedAuthority);
-			return new BearerTokenAuthentication(principal, token, simpleGrantedAuthority);
-		};
+    AuthenticationManager jwtAuthenticationManager() {
+			/*jwtDecoder = NimbusJwtDecoder
+					.withSecretKey(Keys.hmacShaKeyFor(
+							"secursecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuree".getBytes()))
+					.build();*/
+        JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(customJwtDecoder());
+        authenticationProvider.setJwtAuthenticationConverter(customTokenConverter());
+        return authenticationProvider::authenticate;
+    }
 
-	}
+    private Converter<Jwt, AbstractAuthenticationToken> customTokenConverter() {
+        return jwt -> {
+            OAuth2AccessToken token = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, jwt.getTokenValue(),
+                    jwt.getIssuedAt(), jwt.getExpiresAt());
+            Set<GrantedAuthority> simpleGrantedAuthority = fetchAuthorities(jwt);
+            Map<String, Object> attributes = jwt.getClaims();
+            OAuth2AuthenticatedPrincipal principal = new DefaultOAuth2AuthenticatedPrincipal(attributes,
+                    simpleGrantedAuthority);
+            return new BearerTokenAuthentication(principal, token, simpleGrantedAuthority);
+        };
 
-	private Set<GrantedAuthority> fetchAuthorities(Jwt jwt) {
-		List<String> roles = jwt.getClaimAsStringList("role");
-		return roles.stream().map(Role::valueOf).map(Role::getGrantedAuthorities).flatMap(Set::stream)
-				.collect(Collectors.toSet());
-	}
+    }
 
-	private JwtDecoder customJwtDecoder() {
-		return token -> {
-			try {
-				JwtParser parser = Jwts.parserBuilder()
-						.setSigningKey(Keys.hmacShaKeyFor(
-								"secursecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuree".getBytes()))
-						.build();
-				return createJwt(token, parser.parseClaimsJws(token));
-			} catch (Exception ex) {
-				throw new BadJwtException(ex.getMessage());
-			}
-		};
-	}
+    private Set<GrantedAuthority> fetchAuthorities(Jwt jwt) {
+        List<String> roles = jwt.getClaimAsStringList("role");
+        return roles.stream().map(Role::valueOf).map(Role::getGrantedAuthorities).flatMap(Set::stream)
+                .collect(Collectors.toSet());
+    }
 
-	@SuppressWarnings("unchecked")
-	private Jwt createJwt(String token, Jws<Claims> jwsClaims) {
+    private JwtDecoder customJwtDecoder() {
+        return token -> {
+            try {
+                JwtParser parser = Jwts.parserBuilder()
+                        .setSigningKey(Keys.hmacShaKeyFor(
+                                "secursecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuree".getBytes()))
+                        .build();
+                return createJwt(token, parser.parseClaimsJws(token));
+            } catch (Exception ex) {
+                throw new BadJwtException(ex.getMessage());
+            }
+        };
+    }
 
-		jwsClaims.getBody().put(JwtClaimNames.IAT, fromDatetoInstant(jwsClaims.getBody().get(JwtClaimNames.IAT)));
-		jwsClaims.getBody().put(JwtClaimNames.EXP, fromDatetoInstant(jwsClaims.getBody().get(JwtClaimNames.EXP)));
+    @SuppressWarnings("unchecked")
+    private Jwt createJwt(String token, Jws<Claims> jwsClaims) {
+
+        jwsClaims.getBody().put(JwtClaimNames.IAT, fromDatetoInstant(jwsClaims.getBody().get(JwtClaimNames.IAT)));
+        jwsClaims.getBody().put(JwtClaimNames.EXP, fromDatetoInstant(jwsClaims.getBody().get(JwtClaimNames.EXP)));
 //		 @formatter:off
-		return Jwt.withTokenValue(token)
-				.headers((h) -> h.putAll(jwsClaims.getHeader()))
-				.claims((c) -> c.putAll(jwsClaims.getBody()))
-				.build();
-		// @formatter:on
-	}
+        return Jwt.withTokenValue(token)
+                .headers(h -> h.putAll(jwsClaims.getHeader()))
+                .claims(c -> c.putAll(jwsClaims.getBody()))
+                .build();
+        // @formatter:on
+    }
 
-	private Instant fromDatetoInstant(Object timestamp) {
-		return Instant.ofEpochSecond((Integer) timestamp);
-	}
+    private Instant fromDatetoInstant(Object timestamp) {
+        return Instant.ofEpochSecond((Integer) timestamp);
+    }
 
-//	private RSAPublicKey convertkey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
-//		KeyFactory kf = KeyFactory.getInstance("RSA");
-//		byte[] decoded = Base64.getDecoder().decode(key.getBytes());
-//		EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
-//		return (RSAPublicKey) kf.generatePublic(spec);
-//	}
+	/*private RSAPublicKey convertkey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		KeyFactory kf = KeyFactory.getInstance("RSA");
+		byte[] decoded = Base64.getDecoder().decode(key.getBytes());
+		EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
+		return (RSAPublicKey) kf.generatePublic(spec);
+	}*/
 
-	private BearerTokenResolver getTokenResolver() {
-		return request -> {
-			final String authorizationHeaderToken = resolveFromAuthorizationHeader(request);
-//			return new HeaderBearerTokenResolver("X-JWT-ASSERTION");
-			return authorizationHeaderToken;
-		};
+    private BearerTokenResolver getTokenResolver() {
+        return this::resolveFromAuthorizationHeader;
+			/*return new HeaderBearerTokenResolver("X-JWT-ASSERTION");
+            return authorizationHeaderToken;
+        };*/
 
-	}
+    }
 
-	private String resolveFromAuthorizationHeader(HttpServletRequest request) {
-		String authorization = request.getHeader(this.bearerTokenHeaderName);
-		if (!StringUtils.startsWithIgnoreCase(authorization, "bearer")) {
-			return null;
-		}
-		Matcher matcher = authorizationPattern.matcher(authorization);
-		if (!matcher.matches()) {
-			BearerTokenError error = BearerTokenErrors.invalidToken("Bearer token is malformed");
-			throw new OAuth2AuthenticationException(error);
-		}
-		return matcher.group("token");
-	}
+    private String resolveFromAuthorizationHeader(HttpServletRequest request) {
+        String authorization = request.getHeader(this.bearerTokenHeaderName);
+        if (!StringUtils.startsWithIgnoreCase(authorization, "bearer")) {
+            return null;
+        }
+        Matcher matcher = authorizationPattern.matcher(authorization);
+        if (!matcher.matches()) {
+            BearerTokenError error = BearerTokenErrors.invalidToken("Bearer token is malformed");
+            throw new OAuth2AuthenticationException(error);
+        }
+        return matcher.group("token");
+    }
 
-	private AccessDeniedHandler accessDeniedHandler() {
-		return (request, response, accessDeniedException) -> {
+    private AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
 
-			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-			Throwable root = ExceptionUtils.getRootCause(accessDeniedException);
-			// @formatter:off
-			Response<Void> body = Response.<Void>builder()
-					.status(HttpStatus.FORBIDDEN)
-					.statusCode(HttpStatus.FORBIDDEN.value())
-					.reason(root.getClass().getSimpleName())
-					.developerMessage(root.getMessage())
-					.build();
-			// @formatter:on
+            Throwable root = ExceptionUtils.getRootCause(accessDeniedException);
+            var body = ResponseBuilder.build(HttpStatus.FORBIDDEN, root.getMessage(), root.getClass().getSimpleName());
+            objectMapper.writeValue(response.getOutputStream(), body);
 
-			objectMapper.writeValue(response.getOutputStream(), body);
+        };
+    }
 
-		};
-	}
+    private AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
 
-	private AuthenticationEntryPoint authenticationEntryPoint() {
-		return (request, response, authException) -> {
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            Throwable root = ExceptionUtils.getRootCause(authException);
+            var body = ResponseBuilder.build(HttpStatus.UNAUTHORIZED, root.getMessage(), root.getClass().getSimpleName());
+            objectMapper.writeValue(response.getOutputStream(), body);
 
-			Throwable root = ExceptionUtils.getRootCause(authException);
-			// @formatter:off
-			Response<Void> body = Response.<Void>builder()
-					.status(HttpStatus.UNAUTHORIZED)
-					.statusCode(HttpStatus.UNAUTHORIZED.value())
-					.reason(root.getClass().getSimpleName())
-					.developerMessage(root.getMessage())
-					.build();
-			// @formatter:on
-			objectMapper.writeValue(response.getOutputStream(), body);
-
-		};
-	}
+        };
+    }
 }

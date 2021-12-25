@@ -8,19 +8,19 @@ logging:
 
 spring:
   main:
-    banner-mode: off
+    banner-mode: console
   jackson:
     default-property-inclusion: non-null
     serialization:
       indent-output: true
     deserialization:
       fail-on-unknown-properties: false
-      
-#  profiles:
-#    active: ${PROFILE:local}
+
+  #  profiles:
+  #    active: ${PROFILE:local}
   autoconfigure:
-      exclude[0]: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-      exclude[1]: org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+    exclude[0]: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+    exclude[1]: org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
   lifecycle:
     timeout-per-shutdown-phase: 30s
   application:
@@ -49,7 +49,7 @@ spring:
     username: sa
     password: password
     driverClassName: org.h2.Driver
-    
+
 springdoc:
   show-actuator: true
   api-docs:
@@ -76,7 +76,7 @@ management:
   info:
     java:
       enabled: true
-      
+
 server:
   error:
     whitelabel:

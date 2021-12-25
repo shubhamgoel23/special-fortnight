@@ -6,18 +6,18 @@ package com.demo.micro.exception;
  */
 public interface ExceptionPolicy {
 
-	/**
-	 * Get the exception code.
-	 *
-	 * @return the exception code.
-	 */
-	String getCode();
+    /**
+     * Get the exception code.
+     *
+     * @return the exception code.
+     */
+    String getCode();
 
-	/**
-	 * Get the exception message.
-	 *
-	 * @return the exception message.
-	 */
-	String getMessage();
+    /**
+     * Get the exception message.
+     *
+     * @return the exception message.
+     */
+    String getMessage();
 
 }
