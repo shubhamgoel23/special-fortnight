@@ -16,12 +16,13 @@
     <description>micro for Spring Boot</description>
     <properties>
         <java.version>17</java.version>
+        <!--suppress UnresolvedMavenProperty -->
         <version.number>${git.branch}.${git.commit.id.abbrev}</version.number>
         <spring-cloud.version>2021.0.0</spring-cloud.version>
         <spring-doc.version>1.6.1</spring-doc.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <owasp-html-sanitizer.version>20211018.2</owasp-html-sanitizer.version>
+        <owasp-html-sanitizer.version>1.1</owasp-html-sanitizer.version>
         <guava.version>31.0.1-jre</guava.version>
         <javers.version>6.5.3</javers.version>
         <testcontainers.version>1.16.2</testcontainers.version>
